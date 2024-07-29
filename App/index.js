@@ -1,6 +1,7 @@
 // Filename: index.js
 // Combined code from all files
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Animated, Easing } from 'react-native';
 
 const answers = [
@@ -25,7 +26,20 @@ const getRandomAnswer = () => {
 export default function App() {
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(false);
-  const opacity = new Animated.Value(0);
+  const [opacity] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    if (!loading && answer) {
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 1000,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      opacity.setValue(0);
+    }
+  }, [loading, answer, opacity]);
 
   const handlePress = () => {
     setLoading(true);
@@ -34,12 +48,6 @@ export default function App() {
       const newAnswer = getRandomAnswer();
       setAnswer(newAnswer);
       setLoading(false);
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.ease,
-        useNativeDriver: true,
-      }).start();
     }, 3000);
   };
 
